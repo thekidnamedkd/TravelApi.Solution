@@ -1,5 +1,8 @@
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using TravelApi.Models;
@@ -19,24 +22,43 @@ namespace TravelApi.Controllers
 
     // GET api/locations
     [HttpGet]
-    public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
+    public IActionResult GetLocations([FromQuery] UrlQuery urlQuery)
     {
-      var query = _db.Locations.AsQueryable();
+      IEnumerable<Location> locations = null;
 
-      if (continent != null)
+      using (SqlConnection connection = new SqlConnection(_connectionString))
       {
-        query = query.Where(entry => entry.Continent == continent);
-      }
-      if (country != null)
-      {
-        query = query.Where(entry => entry.Country == country);
-      }
-      if (city != null)
-      {
-        query = query.Where(entry => entry.City == city);
-      }
+        connection.Open();
 
-      return query.ToList();
+        string sql = @"SELECT LocationId, City, Country, Continent FROM Location";
+
+        if (urlQuery.PageNumber.HasValue)
+        {
+          sql += @" ORDER BY Location.LocationPK
+              OFFSET @PageSize * (@PageNumber-1) ROWS
+              FETCH NEXT @PageSize ROWS ONLY";
+        }
+        locations = connection.Query<Location>(sql, urlQuery);
+      }
+      
+      return Ok(locations);
+      
+      // var query = _db.Locations.AsQueryable();
+
+      // if (continent != null)
+      // {
+      //   query = query.Where(entry => entry.Continent == continent);
+      // }
+      // if (country != null)
+      // {
+      //   query = query.Where(entry => entry.Country == country);
+      // }
+      // if (city != null)
+      // {
+      //   query = query.Where(entry => entry.City == city);
+      // }
+
+      // return query.ToList();
     }
 
     // POST api/locations
