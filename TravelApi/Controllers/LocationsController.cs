@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,14 @@ namespace TravelApi.Controllers
     {
       return _db.Locations.FirstOrDefault(entry => entry.LocationId == id);
     }
-    
+
+    // PUT api/locations/5
+    [HttpPut("{id}")]
+    public void Put(int id, [FromBody] Location location)
+    {
+      location.LocationId = id;
+      _db.Entry(location).State = EntityState.Modified;
+      _db.SaveChanges();
+    }
   }
 }
