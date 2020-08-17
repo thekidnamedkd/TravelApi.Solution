@@ -1,3 +1,6 @@
+// namespace TravelApi.Models;
+
+
 public class UrlQuery
 {
     private const int maxPageSize = 100;

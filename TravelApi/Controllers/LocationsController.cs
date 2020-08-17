@@ -25,22 +25,35 @@ namespace TravelApi.Controllers
     public IActionResult GetLocations([FromQuery] UrlQuery urlQuery)
     {
       IEnumerable<Location> locations = null;
-
+      int? totalRecords = null;
       using (SqlConnection connection = new SqlConnection(_connectionString))
       {
         connection.Open();
 
         string sql = @"SELECT LocationId, City, Country, Continent FROM Location";
-
+        sql += " FROM Location";
         if (urlQuery.PageNumber.HasValue)
         {
           sql += @" ORDER BY Location.LocationPK
               OFFSET @PageSize * (@PageNumber-1) ROWS
               FETCH NEXT @PageSize ROWS ONLY";
         }
+        if  (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
+        {
+          sql += " SELECT [TotalCount] = COUNT(*) FROM Location";
+        }
+        using (GridReader results = connection.QueryMultiple(sql, urlQuery))
+        {
+          contacts = results.Read<Location>();
+          if (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
+          {
+              totalRecords = results.ReadSingle<int>();
+          }
+        }
+      
         locations = connection.Query<Location>(sql, urlQuery);
       }
-      
+
       return Ok(locations);
       
       // var query = _db.Locations.AsQueryable();
