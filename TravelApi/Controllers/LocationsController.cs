@@ -46,5 +46,14 @@ namespace TravelApi.Controllers
       _db.Entry(location).State = EntityState.Modified;
       _db.SaveChanges();
     }
+
+    // DELETE api/locatons/5
+    [HttpDelete("{id}")]
+    public void Delete(int id)
+    {
+      var locationToDelete = _db.Locations.FirstOrDefault(entry => entry.LocationId == id);
+      _db.Locations.Remove(locationToDelete);
+      _db.SaveChanges();
+    }
   }
 }
