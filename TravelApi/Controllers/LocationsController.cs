@@ -19,9 +19,24 @@ namespace TravelApi.Controllers
 
     // GET api/locations
     [HttpGet]
-    public ActionResult<IEnumerable<Location>> Get()
+    public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
     {
-      return _db.Locations.ToList();
+      var query = _db.Locations.AsQueryable();
+
+      if (continent != null)
+      {
+        query = query.Where(entry => entry.Continent == continent);
+      }
+      if (country != null)
+      {
+        query = query.Where(entry => entry.Country == country);
+      }
+      if (city != null)
+      {
+        query = query.Where(entry => entry.City == city);
+      }
+
+      return query.ToList();
     }
 
     // POST api/locations
