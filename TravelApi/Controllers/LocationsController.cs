@@ -21,24 +21,25 @@ namespace TravelApi.Controllers
       _db = db;
     }
 
-    public ActionResult Index(int page = 0)
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
-      const int PageSize = 3;
+      var response = await contextt.Location.ToListAsync();
+      return Ok(response);
+    }
 
-      var count = _db.Locations.Count();
-      var data = _db.Locations.Skip(page * PageSize).Take(PageSize).ToList();
-
-      ViewBag.MaxPage = (count / PageSize) - (count % PageSize == 0 ? 1 : 0);
-
-      ViewBag.Page = page;
-
-      return View("Index");
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+    {
+        var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+        var response = await context.Location.ToListAsync();
+        return Ok(response);
     }
 
     // GET api/locations
     [HttpGet]
     public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
-      {
+    {
       var query = _db.Locations.AsQueryable();
 
       if (continent != null)
