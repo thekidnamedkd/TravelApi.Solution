@@ -1,8 +1,11 @@
+using System;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TravelApi.Models;
 
@@ -21,56 +24,24 @@ namespace TravelApi.Controllers
 
     // GET api/locations
     [HttpGet]
-    public IActionResult GetLocations([FromQuery] UrlQuery urlQuery)
-    {
-      IEnumerable<Location> locations = null;
-      int? totalRecords = null;
-      using (SqlConnection connection = new SqlConnection(_connectionString))
+    public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
       {
-        connection.Open();
+      var query = _db.Locations.AsQueryable();
 
-        string sql = @"SELECT LocationId, City, Country, Continent FROM Location";
-        sql += " FROM Location";
-        if (urlQuery.PageNumber.HasValue)
-        {
-          sql += @" ORDER BY Location.LocationPK
-              OFFSET @PageSize * (@PageNumber-1) ROWS
-              FETCH NEXT @PageSize ROWS ONLY";
-        }
-        if  (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
-        {
-          sql += " SELECT [TotalCount] = COUNT(*) FROM Location";
-        }
-        using (GridReader results = connection.QueryMultiple(sql, urlQuery))
-        {
-          contacts = results.Read<Location>();
-          if (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
-          {
-              totalRecords = results.ReadSingle<int>();
-          }
-        }
-      
-        locations = connection.Query<Location>(sql, urlQuery);
+      if (continent != null)
+      {
+        query = query.Where(entry => entry.Continent == continent);
+      }
+      if (country != null)
+      {
+        query = query.Where(entry => entry.Country == country);
+      }
+      if (city != null)
+      {
+        query = query.Where(entry => entry.City == city);
       }
 
-      return Ok(locations);
-      
-      // var query = _db.Locations.AsQueryable();
-
-      // if (continent != null)
-      // {
-      //   query = query.Where(entry => entry.Continent == continent);
-      // }
-      // if (country != null)
-      // {
-      //   query = query.Where(entry => entry.Country == country);
-      // }
-      // if (city != null)
-      // {
-      //   query = query.Where(entry => entry.City == city);
-      // }
-
-      // return query.ToList();
+      return query.ToList();
     }
 
     // POST api/locations
