@@ -17,7 +17,9 @@ namespace TravelApi.Models
               new Location { LocationId = 2, City = "Paris", Country = "France", Continent = "Europe" },
               new Location { LocationId = 3, City = "Mexico City", Country = "Mexico", Continent = "North_America" },
               new Location { LocationId = 4, City = "Tokyo", Country = "Japan", Continent = "Asia" },
-              new Location { LocationId = 5, City = "Rome", Country = "Italy", Continent = "Europe" }
+              new Location { LocationId = 5, City = "Rome", Country = "Italy", Continent = "Europe" },
+              new Location { LocationId = 6, City = "Seville", Country = "Spain", Continent = "Europe"},
+              new Location { LocationId = 7, City = "Melbourne", Country = "Australia", Continent = "Australia"}
           );
     }
 
