@@ -1,21 +1,22 @@
-// namespace TravelApi.Models;
+using System.ComponentModel.DataAnnotations;
 
-
-public class UrlQuery
+namespace TravelApi.Models
 {
-    private const int maxPageSize = 100;
-    public int? PageNumber { get; set; }
-
-    private int _pageSize = 50;
-    public int PageSize
+    public class UrlQuery
     {
-        get
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        
+        public UrlQuery()
         {
-            return _pageSize;
+            this.PageNumber = 1;
+            this.PageSize = 10;
         }
-        set
+
+        public UrlQuery(int pageNumber, int pageSize)
         {
-            _pageSize = (value < maxPageSize) ? value : maxPageSize;
+            this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
+            this.PageSize = pageSize > 10 ? 10 : pageSize;
         }
     }
 }

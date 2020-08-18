@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using TravelApi.Models;
+// using TravelApi.Wrappers;
 
 namespace TravelApi.Controllers
 {
@@ -22,19 +23,18 @@ namespace TravelApi.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+    public async Task<IActionResult> GetAll([FromQuery] UrlQuery urlQuery)
     {
-        var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-        var pagedData = await context.Locations
-          .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-          .Take(validFilter.PageSize)
-          .ToListAsync();
-        var totalRecords = await context.Locations.CountAsync();
-        return Ok(new PagedResponse<List<Location>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
+        var validUrlQuery = new UrlQuery(urlQuery.PageNumber, urlQuery.PageSize);
+        var pagedData = _db.Locations
+          .OrderBy(thing => thing.LocationId)
+          .Skip((validUrlQuery.PageNumber - 1) * validUrlQuery.PageSize)
+          .Take(validUrlQuery.PageSize);
+        return Ok(pagedData);
     }
 
     // GET api/locations
-    [HttpGet]
+    [HttpGet ("locations")]
     public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
     {
       var query = _db.Locations.AsQueryable();
