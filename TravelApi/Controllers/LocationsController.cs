@@ -25,14 +25,14 @@ namespace TravelApi.Controllers
     {
       const int PageSize = 3;
 
-      var count =this.dataSource.Count();
-      var data = this.dataSource.Skip(page * PageSize).Take(PageSize).ToList();
+      var count = _db.Locations.Count();
+      var data = _db.Locations.Skip(page * PageSize).Take(PageSize).ToList();
 
-      this.ViewBag.MaxPage = (count / PageSize) - (count % PageSize == 0 ? 1 : 0);
+      ViewBag.MaxPage = (count / PageSize) - (count % PageSize == 0 ? 1 : 0);
 
-      this.ViewBag.Page = page;
+      ViewBag.Page = page;
 
-      return this.View(data);
+      return View(data);
     }
 
     // GET api/locations
