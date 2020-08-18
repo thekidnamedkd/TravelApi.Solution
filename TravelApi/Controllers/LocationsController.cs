@@ -1,11 +1,11 @@
-using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TravelApi.Models;
 
 namespace TravelApi.Controllers
@@ -32,7 +32,7 @@ namespace TravelApi.Controllers
 
       ViewBag.Page = page;
 
-      return View(data);
+      return View("Index");
     }
 
     // GET api/locations
