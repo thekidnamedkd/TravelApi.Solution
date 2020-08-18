@@ -22,18 +22,15 @@ namespace TravelApi.Controllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-      var response = await contextt.Location.ToListAsync();
-      return Ok(response);
-    }
-
-    [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
     {
         var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
-        var response = await context.Location.ToListAsync();
-        return Ok(response);
+        var pagedData = await context.Locations
+          .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+          .Take(validFilter.PageSize)
+          .ToListAsync();
+        var totalRecords = await context.Locations.CountAsync();
+        return Ok(new PagedResponse<List<Location>>(pagedData, validFilter.PageNumber, validFilter.PageSize));
     }
 
     // GET api/locations
