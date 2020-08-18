@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,6 +19,20 @@ namespace TravelApi.Controllers
     public LocationsController(TravelApiContext db)
     {
       _db = db;
+    }
+
+    public ActionResult Index(int page = 0)
+    {
+      const int PageSize = 3;
+
+      var count =this.dataSource.Count();
+      var data = this.dataSource.Skip(page * PageSize).Take(PageSize).ToList();
+
+      this.ViewBag.MaxPage = (count / PageSize) - (count % PageSize == 0 ? 1 : 0);
+
+      this.ViewBag.Page = page;
+
+      return this.View(data);
     }
 
     // GET api/locations
