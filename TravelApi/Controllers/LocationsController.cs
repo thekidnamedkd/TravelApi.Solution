@@ -1,11 +1,13 @@
-using Dapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using TravelApi.Models;
+// using TravelApi.Wrappers;
 
 namespace TravelApi.Controllers
 {
@@ -20,58 +22,37 @@ namespace TravelApi.Controllers
       _db = db;
     }
 
-    // GET api/locations
     [HttpGet]
-    public IActionResult GetLocations([FromQuery] UrlQuery urlQuery)
+    public async Task<IActionResult> GetAll([FromQuery] UrlQuery urlQuery)
     {
-      IEnumerable<Location> locations = null;
-      int? totalRecords = null;
-      using (SqlConnection connection = new SqlConnection(_connectionString))
-      {
-        connection.Open();
+        var validUrlQuery = new UrlQuery(urlQuery.PageNumber, urlQuery.PageSize);
+        var pagedData = _db.Locations
+          .OrderBy(thing => thing.LocationId)
+          .Skip((validUrlQuery.PageNumber - 1) * validUrlQuery.PageSize)
+          .Take(validUrlQuery.PageSize);
+        return Ok(pagedData);
+    }
 
-        string sql = @"SELECT LocationId, City, Country, Continent FROM Location";
-        sql += " FROM Location";
-        if (urlQuery.PageNumber.HasValue)
-        {
-          sql += @" ORDER BY Location.LocationPK
-              OFFSET @PageSize * (@PageNumber-1) ROWS
-              FETCH NEXT @PageSize ROWS ONLY";
-        }
-        if  (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
-        {
-          sql += " SELECT [TotalCount] = COUNT(*) FROM Location";
-        }
-        using (GridReader results = connection.QueryMultiple(sql, urlQuery))
-        {
-          contacts = results.Read<Location>();
-          if (urlQuery.PageNumber.HasValue && urlQuery.IncludeCount)
-          {
-              totalRecords = results.ReadSingle<int>();
-          }
-        }
-      
-        locations = connection.Query<Location>(sql, urlQuery);
+    // GET api/locations
+    [HttpGet ("locations")]
+    public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
+    {
+      var query = _db.Locations.AsQueryable();
+
+      if (continent != null)
+      {
+        query = query.Where(entry => entry.Continent == continent);
+      }
+      if (country != null)
+      {
+        query = query.Where(entry => entry.Country == country);
+      }
+      if (city != null)
+      {
+        query = query.Where(entry => entry.City == city);
       }
 
-      return Ok(locations);
-      
-      // var query = _db.Locations.AsQueryable();
-
-      // if (continent != null)
-      // {
-      //   query = query.Where(entry => entry.Continent == continent);
-      // }
-      // if (country != null)
-      // {
-      //   query = query.Where(entry => entry.Country == country);
-      // }
-      // if (city != null)
-      // {
-      //   query = query.Where(entry => entry.City == city);
-      // }
-
-      // return query.ToList();
+      return query.ToList();
     }
 
     // POST api/locations
