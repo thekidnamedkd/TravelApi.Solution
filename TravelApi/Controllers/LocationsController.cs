@@ -16,7 +16,6 @@ namespace TravelApi.Controllers
   public class LocationsController : ControllerBase
   {
     private TravelApiContext _db;
-
     public LocationsController(TravelApiContext db)
     {
       _db = db;
