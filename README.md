@@ -19,10 +19,8 @@ _This was a practice in building our own API.  We constructed a Travel_API with 
 
 ## Specifications/Example Queries
 
-| Spec |
-| :--- |
 
-Example Query:
+Example Query: <br>
 `https://localhost:5000/api/locations/search?continent=australia`
 
 `https://localhost:5000/api/locations/pages?pageNumber=1&pageSize=3`
