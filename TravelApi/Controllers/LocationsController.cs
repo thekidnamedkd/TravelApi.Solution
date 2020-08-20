@@ -21,23 +21,21 @@ namespace TravelApi.Controllers
       _db = db;
     }
 
-    // [HttpGet]
-    // public async Task<IActionResult> GetAll([FromQuery] UrlQuery urlQuery)
-    // {
-    //     var validUrlQuery = new UrlQuery(urlQuery.PageNumber, urlQuery.PageSize);
-    //     var pagedData = _db.Locations
-    //       .OrderBy(thing => thing.LocationId)
-    //       .Skip((validUrlQuery.PageNumber - 1) * validUrlQuery.PageSize)
-    //       .Take(validUrlQuery.PageSize);
-    //     return Ok(pagedData);
-    // }
+    [HttpGet ("pages")]
+    public async Task<IActionResult> GetAll([FromQuery] UrlQuery urlQuery)
+    {
+        var validUrlQuery = new UrlQuery(urlQuery.PageNumber, urlQuery.PageSize);
+        var pagedData = _db.Locations
+          .OrderBy(thing => thing.LocationId)
+          .Skip((validUrlQuery.PageNumber - 1) * validUrlQuery.PageSize)
+          .Take(validUrlQuery.PageSize);
+        return Ok(pagedData);
+    }
 
-    // GET api/locations
-    [HttpGet ("locations")]
+    [HttpGet ("search")]
     public ActionResult<IEnumerable<Location>> Get(string continent, string country, string city)
     {
       var query = _db.Locations.AsQueryable();
-
       if (continent != null)
       {
         query = query.Where(entry => entry.Continent == continent);
