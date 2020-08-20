@@ -17,12 +17,15 @@ _This was a practice in building our own API.  We constructed a Travel_API with 
 
 <br>
 
-## Specifications
+## Specifications/Example Queries
 
 | Spec |
 | :--- |
 
+Example Query:
+`https://localhost:5000/api/locations/search?continent=australia`
 
+`https://localhost:5000/api/locations/pages?pageNumber=1&pageSize=3`
 
 
 <br>
