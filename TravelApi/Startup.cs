@@ -41,6 +41,9 @@ namespace TravelApi
             opt.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+        // Register the Swagger services
+        services.AddSwaggerDocument();
+
         var appSettingsSection = Configuration.GetSection("AppSettings");
         services.Configure<AppSettings>(appSettingsSection);
 
@@ -96,10 +99,14 @@ namespace TravelApi
       //     endpoints.MapControllers().RequireCors();
       // });
 
+      // Register the Swagger generator and the Swagger UI middlewares
+      app.UseOpenApi();
+      app.UseSwaggerUi3();
+
       // app.UseRouting();   
       // app.UseAuthorization();
       // app.UseHttpsRedirection();
-        app.UseMvc();
+      app.UseMvc();
     }
     }
 }
